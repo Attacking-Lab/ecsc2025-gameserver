@@ -1,0 +1,16 @@
+volumes:
+  postgres:
+    driver_opts:
+      type: none
+      device: ${DATA_ROOT:?error}/postgres
+      o: bind
+  redis:
+    driver_opts:
+      type: none
+      device: ${DATA_ROOT:?error}/postgres
+      o: bind
+  scoreboard:
+    driver_opts:
+      type: none
+      device: ${DATA_ROOT:?error}/postgres
+      o: bind

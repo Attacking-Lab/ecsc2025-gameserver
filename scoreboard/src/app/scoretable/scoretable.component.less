@@ -1,0 +1,84 @@
+@import "../../variables.less";
+
+table {
+	td, th {
+		vertical-align: middle;
+	}
+
+	p {
+		margin: 5px 0;
+	}
+}
+
+.headercell {
+	.fa-spin {
+		margin-left: 10px;
+	}
+}
+
+.rankcell {
+	padding-right: 0;
+	border-right: none;
+}
+
+.teamcell {
+	border-left: none;
+	min-width:270px;
+}
+
+.team-logo-media {
+	padding-right: 15px;
+
+	> img, > a > img {
+		width: 64px;
+		height: 64px;
+		max-width: 64px;
+		max-height: 64px;
+	}
+}
+
+.team-name {
+	max-width: calc(60px + 15vw);
+	margin-top: 3px;
+	margin-bottom: 1px;
+	display: flex;
+	justify-content: flex-start;
+	gap: 3px;
+
+	.team-name-cell {
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
+	a {
+		color: @text-color;
+		flex: 1 1 auto;
+	}
+
+	&.blocked {
+		a {
+			color: @state-danger-text;
+			text-decoration: line-through;
+		}
+	}
+}
+:host-context(html.dark) .team-name a {
+	color: @dm-text-color;
+}
+
+:host-context(html.dark) .team-name.blocked a {
+	color: @dm-danger-color;
+}
+
+.team-vulnbox {
+	font-size: 75%;
+}
+
+.team-total-points {
+	font-size: 16px;
+}
+
+tablelinecells, app-table-service-header-cell {
+	display: none;
+}

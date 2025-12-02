@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Ticks{% endblock %}
+
+{% block content %}
+	<style>
+		.table tfoot tr th, .table tfoot tr td {
+			border-top-width: 3px;
+		}
+
+		.table-stats .progress, .no-margin-bottom {
+			margin-bottom: 0;
+		}
+
+		.progress-bar.progress-bar-disabled {
+			background-color: #777;
+			background-image: none;
+		}
+
+		.label-legend .label {
+			margin-left: 15px;
+		}
+
+		.nowrap {
+			white-space: nowrap;
+		}
+	</style>
+
+
+	<div class="panel panel-default">
+		<div class="label-legend panel-body">
+			<strong>Legend:</strong>
+			<span class="label label-success">&nbsp;</span> Finished
+			<span class="label label-info">&nbsp;</span> Finished, but too late
+			<span class="label label-warning">&nbsp;</span> Timeout
+			<span class="label label-danger">&nbsp;</span> Crashed
+			<span class="label label-default">&nbsp;</span> Not executed (revoked)
+		</div>
+	</div>
+
+
+	<table class="table table-stats">
+		<thead></thead>
+		<tr>
+			<th>#</th>
+			<th>Time</th>
+			<th>Checker Status</th>
+			<th colspan="2">Checker Time</th>
+		</tr>
+		<tbody>
+		{% for i in range(current_tick, first_tick-1, -1) %}
+			<tr>
+				<td>{{ i }}</td>
+				<td class="nowrap">
+					{{ ticks[i].start.strftime('%H:%M:%S') }} -
+					{{ ticks[i].end.strftime('%H:%M:%S') }}
+					<small>({{ ticks[i].time }} sec)</small>
+				</td>
+				<td class="nowrap" style="min-width: 70%">
+					<div class="progress">
+						{% if ticks[i].dispatched > 0 %}
+							<div class="progress-bar progress-bar-success"
+								 style="width: {{ (100*ticks[i].tasks_ok/ticks[i].dispatched)|round|int }}%">
+								{% if ticks[i].tasks_ok %}{{ ticks[i].tasks_ok }} / {{ ticks[i].dispatched }}{% endif %}
+							</div>
+							<div class="progress-bar progress-bar-info"
+								 style="width: {{ (100*ticks[i].tasks_toolate/ticks[i].dispatched)|round|int }}%">
+								{% if ticks[i].tasks_toolate %}{{ ticks[i].tasks_toolate }} / {{ ticks[i].dispatched }}{% endif %}
+							</div>
+							<div class="progress-bar progress-bar-warning"
+								 style="width: {{ (100*ticks[i].tasks_warn/ticks[i].dispatched)|round|int }}%">
+								{% if ticks[i].tasks_warn %}{{ ticks[i].tasks_warn }}{% endif %}
+							</div>
+							<div class="progress-bar progress-bar-danger"
+								 style="width: {{ (100*ticks[i].tasks_error/ticks[i].dispatched)|round|int }}%">
+								{% if ticks[i].tasks_error %}{{ ticks[i].tasks_error }}{% endif %}
+							</div>
+							<div class="progress-bar progress-bar-disabled"
+								 style="width: {{ (100*ticks[i].tasks_revoked/ticks[i].dispatched)|round|int }}%">
+								{% if ticks[i].tasks_revoked %}{{ ticks[i].tasks_revoked }}{% endif %}
+							</div>
+						{% endif %}
+					</div>
+				</td>
+				<td class="nowrap">
+					{% if not ticks[i].last_finished %}
+						<small class="text-muted">-</small>
+					{% elif ticks[i].last_finished > ticks[i].end %}
+						<small class="text-danger">
+							{{ '{:.1f}'.format((ticks[i].last_finished - ticks[i].start).total_seconds()) }} sec
+						</small>
+					{% elif ticks[i].last_finished.timestamp() > ticks[i].end.timestamp() - 10 %}
+						<small class="text-warning">
+							{{ '{:.1f}'.format((ticks[i].last_finished - ticks[i].start).total_seconds()) }} sec
+						</small>
+					{% else %}
+						<small>
+							{{ '{:.1f}'.format((ticks[i].last_finished - ticks[i].start).total_seconds()) }} sec
+						</small>
+					{% endif %}
+				</td>
+				<td>
+					<a href="{{ url_for('endpoints.checker_status', tick=i) }}" class="glyphicon glyphicon-search"></a>
+				</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+
+	{% if first_tick > 1 %}
+		<a href="{{ url_for('.checker_status_overview') }}/all">&rArr; Show all ...</a><br />
+	{% endif %}
+		<a href="{{ url_for('.checker_status') }}">&rArr; Inspect current tick ...</a>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}

@@ -1,0 +1,6 @@
+[submodule "gamelib"]
+	path = gamelib
+	url = ../ecsc2025-gamelib.git
+[submodule "enochecker-core"]
+	path = enochecker-core
+	url = ../enochecker-core.git

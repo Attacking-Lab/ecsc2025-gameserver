@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+		  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+		  integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">-->
+	<link rel="stylesheet" href="index.css">
+	<link rel="icon" type="image/png" href="favicon.png">
+	<link rel="shortcut icon" type="image/png" href="favicon.png">
+
+    <style>
+        table th { vertical-align: top !important; }
+        table th small { font-weight: normal }
+    </style>
+
+	<title>Team VPN Status - saarCTF</title>
+	<meta http-equiv="refresh" content="60">
+</head>
+<body>
+<div class="bg-primary-theme">
+	<div class="container-fluid">
+		<h1 class="page-header">saarCTF Team VPN Status</h1>
+	</div>
+	<br/>
+</div>
+
+<br/>
+
+<div class="container">
+
+	<p>
+		<a href="all_teams.json">&rArr; all teams (as JSON)</a><br/>
+		<a href="available_teams.json">&rArr; teams that connected to the VPN once (as JSON)</a>
+		<span class="text-muted"> &mdash; Cloud-hosting teams will not be included until the competition starts.</span>
+	</p>
+
+	<p class="text-muted">Last update: {{ start.strftime('%d. %b %Y %H:%M:%S %Z') }}</p>
+
+	<table class="table table-bordered">
+		<thead>
+		<tr>
+			<th>#</th>
+			<th>Team</th>
+			<th>
+                VPN Status
+                {% if wireguard %}
+                    <br/>
+                    <small>for vuln/testbox</small>
+                {% endif %}
+            </th>
+			<th>
+                Last VPN Connection
+                {% if wireguard %}
+                    <br/>
+                    <small>to vulnbox</small>
+                {% endif %}
+            </th>
+			<th>Ping to Router</th>
+			<th>Ping to Testbox</th>
+			<th>Testbox Check</th>
+			{% if check_vulnboxes %}
+				<th>Ping to Vulnbox</th>
+			{% endif %}
+		</tr>
+		</thead>
+		<tbody>
+		{% for state in states %}
+			<tr>
+				<th>{{ state.team.id }}</th>
+				<td>{{ state.team.name }} <br/><small>(vulnbox&nbsp;{{ state.team.vulnbox_ip }})</small></td>
+				<td class="more-line-height">
+					{% if state.team.vpn_connected %}
+						<span class="label label-success">connected (self-hosted)</span>
+                    {% elif state.team.vpn2_connected %}
+						<span class="label label-success">connected (cloud-hosted)</span>
+                    {% elif state.team.wg_boxes_connected %}
+                        {% if state.team.wg_vulnbox_connected %}
+                            <span class="label label-success" title="VPN peer with route to vulnbox is connected">connected (v)</span>
+                        {% else %}
+                            <span class="label label-success" title="VPN connection with at least one IP from .1-.3 active">connected</span>
+                        {% endif %}
+					{% else %}
+						<span class="label label-default">disconnected</span>
+					{% endif %}
+					{% if state.team.vpn_connection_count > 0 %}
+						<br/>
+                        {% if wireguard %}
+						    <span class="label label-success" title="Connected wireguard peers">{{ state.team.vpn_connection_count }} peers</span>
+                        {% else %}
+						    <span class="label label-success" title="Connected team members">{{ state.team.vpn_connection_count }} players</span>
+                        {% endif %}
+					{% endif %}
+					{% if state.team.vpn_connected and state.team.vpn2_connected %}
+						<br />
+						<span class="label label-danger" title="Team-hosted VPN must not be active while the cloud-hosted vulnbox is used. Use the other provided VPN config instead.">Multiple VPN</span>
+					{% endif %}
+					{% if state.team.vpn_connected and state.team.vpn_connection_count > 0 %}
+						<br />
+						<span class="label label-danger" title="Team-hosted VPN and cloud-hosted VPN must not be used at the same time.">Multiple VPN</span>
+					{% endif %}
+					{% if state.team.id in banned_teams %}
+						<br/>
+						<span class="label label-danger" title="Network traffic is currently blocked. Please contact the organizers in IRC!">! blocked !</span>
+					{% endif %}
+				</td>
+				<td>
+					{% if state.team.vpn_last_connect %}
+						{{ state.team.vpn_last_connect.strftime('%d. %b %Y %H:%M:%S %Z') }}
+					{% else %}
+						<span class="text-danger">never connected</span>
+					{% endif %}
+				</td>
+				{% if state.connected %}
+					<td>
+						{% if state.router_ping_ms != None %}
+							<span class="label label-success">ok</span>
+							{{ '%0.1f ms' | format(state.router_ping_ms) }}
+						{% else %}
+							<span class="label label-danger">unreachable</span>
+						{% endif %}
+					</td>
+					<td>
+						{% if state.testbox_ping_ms != None %}
+							<span class="label label-success">ok</span>
+							{{ '%0.1f ms' | format(state.testbox_ping_ms) }}
+						{% else %}
+							<span class="label label-danger">unreachable</span>
+						{% endif %}
+					</td>
+					<td>
+						{% if state.testbox_ok %}
+							<span class="label label-success">ok</span>
+						{% elif state.testbox_err == 'unreachable' %}
+							<span class="label label-danger">{{ state.testbox_err }}</span>
+						{% else %}
+							<span class="label label-warning">{{ state.testbox_err }}</span>
+						{% endif %}
+					</td>
+					{% if check_vulnboxes %}
+						<td>
+							{% if state.vulnbox_ping_ms != None %}
+								<span class="label label-success">ok</span>
+								{{ '%0.1f ms' | format(state.vulnbox_ping_ms) }}
+							{% else %}
+								<span class="label label-danger">unreachable</span>
+							{% endif %}
+						</td>
+					{% endif %}
+				{% else %}
+					<td><span class="label label-default">-</span></td>
+					<td><span class="label label-default">-</span></td>
+					<td><span class="label label-default">-</span></td>
+					{% if check_vulnboxes %}
+						<td><span class="label label-default">-</span></td>
+					{% endif %}
+				{% endif %}
+			</tr>
+		{% endfor %}
+
+		</tbody>
+	</table>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,9 @@
+mypy>=1.5.1
+types-PyYAML
+types-redis
+types-requests
+types-selenium
+types-setuptools
+types-six
+types-ujson
+pytest

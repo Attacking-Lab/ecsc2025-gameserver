@@ -1,0 +1,213 @@
+// @import "~bootstrap/less/bootstrap.less";
+
+// Core variables and mixins
+@import "bootstrap/less/variables.less";
+@import "bootstrap/less/mixins.less";
+// Reset and dependencies
+@import "bootstrap/less/normalize.less";
+@import "bootstrap/less/print.less";
+//@import "~bootstrap/less/glyphicons.less";
+// Core CSS
+@import "bootstrap/less/scaffolding.less";
+@import "bootstrap/less/type.less";
+@import "bootstrap/less/code.less";
+@import "bootstrap/less/grid.less";
+@import "bootstrap/less/tables.less";
+@import "bootstrap/less/forms.less";
+@import "bootstrap/less/buttons.less";
+// Components
+@import "bootstrap/less/component-animations.less";
+@import "bootstrap/less/dropdowns.less";
+@import "bootstrap/less/button-groups.less";
+//@import "~bootstrap/less/input-groups.less";
+//@import "~bootstrap/less/navs.less";
+//@import "~bootstrap/less/navbar.less";
+//@import "~bootstrap/less/breadcrumbs.less";
+//@import "~bootstrap/less/pagination.less";
+//@import "~bootstrap/less/pager.less";
+@import "bootstrap/less/labels.less";
+@import "bootstrap/less/badges.less";
+//@import "~bootstrap/less/jumbotron.less";
+//@import "~bootstrap/less/thumbnails.less";
+@import "bootstrap/less/alerts.less";
+//@import "~bootstrap/less/progress-bars.less";
+//@import "bootstrap/less/media.less";
+//@import "~bootstrap/less/list-group.less";
+//@import "~bootstrap/less/panels.less";
+//@import "~bootstrap/less/responsive-embed.less";
+//@import "~bootstrap/less/wells.less";
+@import "bootstrap/less/close.less";
+// Components w/ JavaScript
+//@import "~bootstrap/less/modals.less";
+@import "bootstrap/less/tooltip.less";
+@import "bootstrap/less/popovers.less";
+//@import "~bootstrap/less/carousel.less";
+// Utility classes
+@import "bootstrap/less/utilities.less";
+@import "bootstrap/less/responsive-utilities.less";
+
+// My bootstrap mods
+@import "bootstrap/less/theme.less";
+@import "variables.less";
+
+// Font awesome
+@import "@fortawesome/fontawesome-free/less/fontawesome.less";
+// @import "~@fortawesome/fontawesome-free/less/regular.less";
+@import "@fortawesome/fontawesome-free/less/solid.less";
+
+@import "darkmode.less";
+
+body {
+	font-family: "Noto Sans", sans-serif, "Noto Color Emoji";
+}
+
+table td {
+	font-family: "Noto Sans Mono", monospace, "Noto Color Emoji";
+}
+
+.bg-primary-theme h1 {
+	font-size: 23pt;
+}
+
+.bg-primary-theme {
+	position: sticky;
+	left: 0;
+	color: #fff;
+	background: #343a40;
+	padding-bottom: 5px;
+	//.bg-variant(@brand-primary);
+	//#gradient > .vertical(@start-color: lighten(@navbar-inverse-bg, 10%); @end-color: @navbar-inverse-bg);
+
+	a, .btn-link  {
+		color: white !important;
+	}
+
+	a:hover, .btn-link:hover {
+		color: gray !important;
+	}
+}
+
+a.href {
+	cursor: pointer;
+}
+
+
+table.hideHistory {
+	.delta > small {
+		display: none;
+	}
+
+	.history-3, .history-2, .history-1 {
+		display: none !important;
+	}
+}
+
+.sum-mode-only {
+	display: none;
+}
+
+table.onlySums {
+	.sum-mode-only {
+		display: inherit;
+	}
+
+	.not-in-sum-mode {
+		display: none;
+	}
+
+	.result-container {
+		grid-template-columns: @line-height-computed max-content max-content 1fr; // calc(@line-height-computed + @result-grid-gap-large) max-content max-content;
+		> .offset-left {
+			margin-left: 0;
+		}
+
+		> .sla-col {
+			grid-column: 1 / span 4 !important;
+			text-align: center !important;
+
+			.info-link {
+				float: none;
+			}
+		}
+
+		> i {
+			grid-column: 1;
+		}
+	}
+}
+
+table.table-bordered.table-stickyhead {
+	border-collapse: separate;
+
+	td {
+		border-top: 0;
+		border-left: 0;
+	}
+
+	thead {
+		position: sticky;
+		top: 0;
+		z-index: 20;
+
+		tr {
+			background-color: @table-border-color;
+			border-bottom: 0;
+		}
+
+		th, td {
+			background-color: @table-head-bg-color;
+			background-clip: padding-box;
+			border-bottom: 0;
+		}
+
+		box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+		0px 2px 2px 0px rgba(0, 0, 0, 0.14),
+		0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+	}
+}
+
+app-scoretable > table.table-bordered.table-stickyhead {
+	.teamcell, .rankcell {
+		border-right: 0;
+		// position: sticky;
+		z-index: 10;
+		background-color: @table-head-bg-color;
+		background-clip: padding-box;
+	}
+
+	.rankcell {
+		left: 0px;
+		min-width: 35px;
+	}
+
+	td:has(> .sum-container) {
+		max-width: 120px;
+	}
+
+	.sum-container {
+		padding-left: 0.5em;
+		padding-right: 0.5em;
+	}
+
+	.headercell {
+		min-width: 390px;
+	}
+
+	.teamcell {
+		left: 35px;
+		padding-right: 1em;
+
+		clip-path: inset(0px -4px -1px 0px); // clip the shadow to right only, -1px for bottom border
+		box-shadow: 2px 0px 1px -1px rgba(0, 0, 0, 0.2),
+		1px 0px 1px 0px rgba(0, 0, 0, 0.14),
+		1px 0px 3px 0px rgba(0, 0, 0, 0.12);
+	}
+}
+
+.media-left {
+	float: left;
+}
+
+i.fa-tachometer-alt {
+	margin-top: 1px;
+}

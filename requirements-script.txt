@@ -1,0 +1,15 @@
+# for the task runner
+flask<3
+psycopg2-binary
+redis
+celery[ampq,redis]>=5.3, <6
+filelock
+
+# for the scripts
+requests
+pwntools
+numpy
+pycryptodome
+fuckpy3
+beautifulsoup4
+pytz

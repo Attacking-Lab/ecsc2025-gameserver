@@ -1,0 +1,82 @@
+databases:
+  postgres:
+    username: playground
+    password: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    server: postgres
+    port: 5432
+    database: playground
+  redis:
+    host: redis
+    port: 6379
+    db: 0
+    password: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+website_team_url: "http://platform.playground.svc.cluster.local/team/export?token=00000000000000000000"
+website_logo_url: "http://platform.playground.svc.cluster.local/media"
+
+# remote services
+flower_url: ''
+# flower_internal_url: http://127.0.0.1:20000/
+# flower_ajax_url: /flower/
+coder_url: ''
+scoreboard_url: ''
+grafana_url: ''
+
+# paths
+scoreboard_path: "/scoreboard"
+vpnboard_path: "/dev/shm/vpnboard"
+checker_packages_path: "/dev/shm/packages"
+patches_path: "/dev/shm/patches"
+patches_public_path: "/dev/shm/patches-webroot"
+
+# Setup
+external_timer: true # false for local test setup without dedicated ctftimer script, true for production setup
+tick_duration: 60
+
+# Flags / scoring
+flag_prefix: ECSC  # must be exactly 4 letters
+scoring:
+  flags_rounds_valid: 5
+  nop_team_id: 1
+  off_factor: 1
+  def_factor: 1
+  sla_factor: 1
+  algorithm: "algorithm:ScoreTickAlgorithmAtklab"  # if you define alternate algorithms
+
+runner:
+  eno:
+    check_past_ticks: 5
+    timeout: 15  # in seconds
+
+# List of (saarctf-style) services for auto-deployment on servers
+service_remotes:
+  - "" #ssh://git@gitlab.saarsec.rocks:2222/...
+
+# Network configuration
+dispatcher_check_vpn_status: false
+
+network:
+  game: 10.32.0.0/15
+  # IP syntax: [a, b, c, d]
+  # where each component is either:
+  # - number
+  # - list ["x", "y", "z"]  =  ((team_id / x) mod y) + z
+  vulnbox_ip: [10, 32, [1, 200, 0], 2]
+  gateway_ip: [10, 32, [1, 200, 0], 254]
+  testbox_ip: [127, 0, 0, 1]
+  # same as IP syntax, but with fith component for range
+  team_range: [10, 32, [1, 200, 0], 0, 24]
+  vpn_host: 127.0.0.1
+  vpn_peer_ips: [127, 0, 0, 1]  # not necessary for wireguard
+  gameserver_ip: 10.32.251.2
+  gameserver_range: 10.32.251.0/24
+
+# wireguard_sync:
+#   api_server: https://ctf.saarland
+#   api_token: "..."
+
+ctfroute_namespace: cte25
+ctf_start_time: "2025-09-30T15:00:00"
+ctf_network_open: "2025-09-30T16:00:00"
+ctf_end_time: "2025-09-30T17:00:00"
+scoreboard_freeze: 16  # this is the last tick that's completely published, every tick afterwards will keep this tick's results
